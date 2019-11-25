@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>UserRepositoryTest.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #808080; font-style: italic;}
+.s3 { color: #0000ff;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UserRepositoryTest.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.openclassrooms.magicgithub;
+
+<span class="s0">import </span>com.openclassrooms.magicgithub.api.FakeApiServiceGenerator;
+<span class="s0">import </span>com.openclassrooms.magicgithub.di.Injection;
+<span class="s0">import </span>com.openclassrooms.magicgithub.model.User;
+<span class="s0">import </span>com.openclassrooms.magicgithub.repository.UserRepository;
+<span class="s0">import </span>org.junit.Before;
+<span class="s0">import </span>org.junit.Test;
+<span class="s0">import </span>org.junit.runner.RunWith;
+<span class="s0">import </span>org.junit.runners.JUnit4;
+<span class="s0">import </span>java.util.List;
+<span class="s0">import </span>java.util.stream.Collectors;
+
+<span class="s0">import static </span>com.openclassrooms.magicgithub.api.FakeApiServiceGenerator.FAKE_USERS;
+<span class="s0">import static </span>com.openclassrooms.magicgithub.api.FakeApiServiceGenerator.FAKE_USERS_RANDOM;
+<span class="s0">import static </span>org.junit.Assert.*;
+<span class="s0">import static </span>org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+
+
+<span class="s2">/**</span>
+ * Unit test, which will execute on a JVM.
+ * Testing UserRepository.
+ */
+@RunWith(JUnit4.<span class="s0">class</span>)
+<span class="s0">public class </span>UserRepositoryTest {
+    
+    <span class="s0">private </span>UserRepository userRepository;
+    
+    @Before
+    <span class="s0">public void </span>setup() {
+        userRepository = Injection.createUserRepository();
+    }
+    
+    @Test
+    <span class="s0">public void </span>getUsersWithSuccess() {
+        List&lt;User&gt; usersActual = userRepository.getUsers();
+        List&lt;User&gt; usersExpected = FAKE_USERS;
+        assertThat(usersActual, containsInAnyOrder(usersExpected.toArray()));
+    }
+
+    @Test
+    <span class="s0">public void </span>generateRandomUserWithSuccess() {
+        userRepository.getUsers().clear();
+        userRepository.generateRandomUser();
+        User user = userRepository.getUsers().get(<span class="s3">0</span>);
+        assertEquals(<span class="s3">1</span>, userRepository.getUsers().size());
+        assertTrue(FAKE_USERS_RANDOM.stream().map(User::getAvatarUrl).collect(Collectors.toList()).contains(user.getAvatarUrl()));
+        assertTrue(FAKE_USERS_RANDOM.stream().map(User::getId).collect(Collectors.toList()).contains(user.getId()));
+        assertTrue(FAKE_USERS_RANDOM.stream().map(User::getLogin).collect(Collectors.toList()).contains(user.getLogin()));
+        assertFalse(FAKE_USERS.stream().map(User::getAvatarUrl).collect(Collectors.toList()).contains(user.getAvatarUrl()));
+        assertFalse(FAKE_USERS.stream().map(User::getId).collect(Collectors.toList()).contains(user.getId()));
+        assertFalse(FAKE_USERS.stream().map(User::getLogin).collect(Collectors.toList()).contains(user.getLogin()));
+    }
+
+    @Test
+    <span class="s0">public void </span>deleteUserWithSuccess() {
+        User userToDelete = userRepository.getUsers().get(<span class="s3">0</span>);
+        userRepository.deleteUser(userToDelete);
+        assertFalse(userRepository.getUsers().contains(userToDelete));
+    }
+}</pre>
+</body>
+</html>
